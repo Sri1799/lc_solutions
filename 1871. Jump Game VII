@@ -1,0 +1,40 @@
+// LC 1871 (Jump Game VII) solved using DFS + a minor optimization
+// N is len of string s
+// TC - O(N) 
+// At max, we would have to iterate through each char of the string s
+// SC - O(N)
+// At worst case (all chars in s == '0') and minJump = 1 & maxJump = N, then all the nodes would be added to queue
+
+class Solution {
+public:
+    bool canReach(string s, int minJump, int maxJump) {
+        int len = s.length();
+        if (s[len-1] == '1')
+            return false;
+        
+        queue<int> q;
+        q.push(0);
+        
+        int prevMax = 0;
+        
+        while(!q.empty())
+        {
+            int index = q.front(); q.pop();
+            
+            for (int i=max(prevMax, index+minJump);i<=min(len-1,index+maxJump);i++)
+            {
+                if (s[i] == '0')
+                {
+                    if (i == len-1)
+                        return true;
+                    
+                    q.push(i);
+                }
+            }   
+            
+            prevMax = index+maxJump+1;
+        }
+        
+        return false;
+    }
+};
