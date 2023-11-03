@@ -1,0 +1,34 @@
+// LC 1441 (Build an Array With Stack Operations)
+// N is len of string target vector
+// TC - O(N)
+// We would have to iterate through each element in target vector
+// SC - O(N)
+// We have to add either "Push" OR "Push"+"Pop" for every element in the target vector
+
+class Solution {
+public:
+    vector<string> buildArray(vector<int>& target, int n) {
+        string pu = "Push", po = "Pop";
+        int i = 1;
+        int tPtr = 0;
+        vector<string> ans;
+        
+        while(i <= n && tPtr < target.size())
+        {
+            if (i == target[tPtr])
+            {
+                i++;
+                tPtr++;
+                ans.push_back(pu);
+            }
+            else
+            {
+                i++;
+                ans.push_back(pu);
+                ans.push_back(po);
+            }
+        }
+        
+        return ans;
+    }
+};
