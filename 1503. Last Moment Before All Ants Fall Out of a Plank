@@ -1,0 +1,15 @@
+// 1503. Last Moment Before All Ants Fall Out of a Plank
+// 2 ants moving in opposite directions to meet at a common point and switch directions is equivalent to the ants not switching directions at all
+// TC - O(N) : for min_element, max_element C++ STL calls
+// SC - O(1)
+
+class Solution {
+public:
+    int getLastMoment(int n, vector<int>& left, vector<int>& right) {
+        
+        int maxFallRHS = right.size() > 0 ? (n - *min_element(right.begin(), right.end())) : 0;
+        int maxFallLHS = left.size() > 0 ? *max_element(left.begin(), left.end()) : 0;
+        
+        return max(maxFallRHS, maxFallLHS);
+    }
+};
