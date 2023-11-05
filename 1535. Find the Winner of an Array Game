@@ -1,0 +1,44 @@
+class Solution {
+public:
+    unordered_map<int,int> m;
+
+    int getWinner(vector<int>& arr, int k) {
+        
+        int n = arr.size();
+        
+        int maxElem = arr[0];
+        
+        for (int i=1;i<n;i++)
+            maxElem = max(maxElem, arr[i]);
+        
+        deque<int> q;
+        if (k > n-2)
+        {
+            return maxElem;
+        }
+
+        for (auto &num : arr)
+            q.push_back(num);
+        
+        while(true)
+        {
+            int a = q.front(); q.pop_front();
+            int b = q.front(); q.pop_front();
+            
+            int maxVal = max(a,b);
+            int minVal = min(a,b);
+            
+            m[maxVal]++;
+            
+            if (m[maxVal] >= k)
+            {
+                return maxVal;
+            }
+            
+            q.push_front(maxVal);
+            q.push_back(minVal);
+        }
+        
+        return 0;
+    }
+};
