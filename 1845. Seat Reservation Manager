@@ -1,0 +1,33 @@
+// 1845. Seat Reservation Manager
+// Using priority_queue (min heap) to store seats and identify the least-numbered seat
+// N is the number of seats in total, M is the total number of calls to reserve & unreserve
+// TC - O((N + M)*log N) (in priority queue - push and pop both take O(log N) time)
+// SC - O(N)
+
+class SeatManager {
+public:
+    
+    priority_queue<int, vector<int>, greater<int>> pq;
+    
+    SeatManager(int n) {
+        for (int i=1;i<=n;i++)
+            pq.push(i);
+    }
+    
+    int reserve() {
+        auto num = pq.top();
+        pq.pop();
+        return num;
+    }
+    
+    void unreserve(int seatNumber) {
+        pq.push(seatNumber);
+    }
+};
+
+/**
+ * Your SeatManager object will be instantiated and called as such:
+ * SeatManager* obj = new SeatManager(n);
+ * int param_1 = obj->reserve();
+ * obj->unreserve(seatNumber);
+ */
