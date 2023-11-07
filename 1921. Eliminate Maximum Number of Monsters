@@ -1,0 +1,40 @@
+// 1921. Eliminate Maximum Number of Monsters
+// Greedy algorithm: Sort the 'times' by which a monster would arrive at 0 in increasing order
+// N is the number of monsters
+// TC - O(N*Log N): 
+// 1. iterating through each dist element, while loop for going through the times vector ==> O(N)
+// 2. sorting the vector ==> O(N*Log N)
+// SC - O(N): for the times data structure which stores the elements.
+
+class Solution {
+public:
+    int eliminateMaximum(vector<int>& dist, vector<int>& speed) {
+        vector<int> times;
+        int time = 1, n = dist.size();
+        
+        for (int i=0;i<n;i++)
+        {
+            auto timeVal = ceil((float)dist[i] / speed[i]);
+            times.push_back(timeVal);
+        }
+        
+        sort(times.begin(), times.end());
+        
+        int i = 1;
+        while(i < n)
+        {
+            auto t = times[i];
+            if (t > time)
+            {
+                time++;
+                i++;
+            }
+            else
+            {
+                return i;
+            }
+        }
+        
+        return i;
+    }
+};
