@@ -1,0 +1,42 @@
+class Solution {
+public:
+    
+    unordered_map<int, vector<int>> graph;
+    
+    vector<int> restoreArray(vector<vector<int>>& adjacentPairs) {
+        
+        for (auto &edge : adjacentPairs)
+        {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        
+        int root;
+        
+        for (auto &node : graph)
+        {
+            if (node.second.size() == 1)
+            {
+                root = node.first;
+                break;
+            }
+        }
+        
+        vector<int> ans;
+        dfs(root, -1, ans);
+        return ans;
+    }
+    
+    void dfs(int node, int prev, vector<int> &ans)
+    {
+        ans.push_back(node);
+        
+        for (auto child : graph[node])
+        {
+            if (child != prev)
+            {
+                dfs(child, node, ans);
+            }
+        }
+    }
+};
