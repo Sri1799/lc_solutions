@@ -1,0 +1,43 @@
+// WC 374
+// TC - O(N) (populating the map) + O(root of TARGET) (while loop)
+// SC - O(N) (map stores all elems in coins vector)
+
+The idea here is if there exists a group of int 1, 2, ... x => they can sum to any value in this array => [1, x(x+1)/2]
+If we add a new elem 'r' to the group above => then we can to any value in this array => [1, x(x+1)/2 + r]
+
+So, consider the upper bound as a 'limit' to which we can sum to
+if there is a number > limit - we have to greedily add it to the set and increment the answer count and limit accordingly, else we just continue to the next number
+
+limit is initially initialized to 0, we iterate each number starting with i = 1
+once our ongoing limit >= target - we return the ans
+
+class Solution {
+public:
+    int minimumAddedCoins(vector<int>& coins, int target) {
+            
+        unordered_map<int,int> m;
+        for (auto &coin : coins)
+            m[coin]++;
+
+        int ans = 0, limit = 0, i = 1;
+
+        while(limit < target)
+        {
+            if (m.find(i) != m.end())
+            {
+                limit += (m[i]*i);
+            }
+            else if (i > limit)
+            {
+                ans++;
+                m[i]++;
+                limit += i;
+            }
+
+            i++;
+        }
+        
+        return ans;
+    }
+};
+
