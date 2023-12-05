@@ -1,0 +1,12 @@
+1688. Count of Matches in Tournament
+
+// For every match played, 1 team is eliminated. Hence for n-1 to be eliminated, n-1 matches must be played.
+// TC O(1)
+// SC O(1)
+
+class Solution {
+public:
+    int numberOfMatches(int n) {
+        return n-1;
+    }
+};
