@@ -1,0 +1,20 @@
+// 1716. Calculate Money in Leetcode Bank
+// TC - O(1)
+// SC - O(1)
+
+class Solution {
+public:
+    int totalMoney(int n) {
+        // 1 2 3 4 5 6 7
+        // 2 3 4 5 6 7 8
+        
+        int day = 1, completedWeeks = (n-1)/7, dayIdx = n%7 == 0 ? 7 : n%7;
+        
+        int inc = completedWeeks - 1;
+        int idx1 = 1 + completedWeeks - 1;
+        int idx2 = completedWeeks + dayIdx;
+        int ans = 28*completedWeeks + (inc*inc + inc)/2 * 7 + (idx2*(idx2+1))/2 - (idx1*(idx1+1))/2;
+
+        return ans;
+    }
+};
