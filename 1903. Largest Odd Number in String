@@ -1,0 +1,22 @@
+// 1903. Largest Odd Number in String
+// TC - O(N)
+// SC - O(1)
+
+class Solution {
+public:
+    string largestOddNumber(string s) {
+        
+        int n = s.length();
+        int start = n-1, end = n-1;
+        
+        while (start >= 0)
+        {
+            int digit = s[start]-'0';
+            if (digit%2)
+                break;
+            start--;
+        }
+        
+        return s.substr(0, start+1);
+    }
+};
