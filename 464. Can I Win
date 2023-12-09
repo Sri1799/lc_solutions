@@ -1,0 +1,53 @@
+// 464. Can I Win
+// TC - O(2 ^ M) : Time take to initialize the data structures required + No. of function calls (no. of unique nodes/states visited)
+// SC - O(2 ^ M) : Size of data structures initialized + size of system call stack
+
+
+class Solution {
+public:
+
+    // TC - O(2^M)
+    // SC - O(2^M)
+
+    vector<int> dp;
+    int m, t;
+
+    bool solve(int score, int mask)
+    {
+        if (dp[mask] != -1)
+        {
+            return dp[mask];
+        }
+
+        for (int i=1;i<=m;i++)
+        {
+            int bt = 1<<i;
+            if (!(mask & bt))
+            {
+                if (score+i>=t || !solve(score+i, mask | bt))
+                {
+                    dp[mask] = 1;
+                    return true;
+                }
+            }
+        }
+
+        dp[mask] = 0;
+        return false;
+    }
+
+    bool canIWin(int mci, int dt)
+    {
+        m = mci;
+        t = dt;
+        int maxValPossible = (mci * (mci + 1))/2;
+        if (maxValPossible < dt)
+        {
+            return false;
+        }
+
+        dp.assign(1<<(m+1), -1);
+
+        return solve(0, 0);
+    }
+};
