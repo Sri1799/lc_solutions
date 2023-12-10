@@ -1,0 +1,60 @@
+// 1140. Stone Game II
+
+// TC - O(2 power N^2)
+// SC - O(N^3)
+
+class Solution {
+public:
+
+    int totalSum, n;
+    vector<int> ps;
+
+    vector<vector<vector<int>>> dp;
+
+    int solve(vector<int> &nums, int l, int r, int m)
+    {
+        if (l > r)
+            return 0;
+
+        if (l == r)
+            return nums[l];
+
+        if (dp[l][r][m] != -1)
+            return dp[l][r][m];
+
+        int maxSum = 0;
+
+        for (int x=1;x<=2*m;x++)
+        {
+            int start = l;
+            int end = min(n-1, start + x - 1);
+
+            int currSum = totalSum - (start == 0 ? 0 : ps[start-1]) - solve(nums, end+1, r, max(x, m));
+
+            maxSum = max(maxSum, currSum);
+
+            if (end == n-1)
+            break;
+        }
+
+        dp[l][r][m] = maxSum;
+
+        return maxSum;
+    }
+
+    int stoneGameII(vector<int>& nums) {
+        n = nums.size();
+
+        ps = nums;
+        for (int i=1;i<n;i++)
+        {
+            ps[i] += ps[i-1];
+        }
+
+        totalSum = ps[n-1];
+
+        dp.assign(n, vector<vector<int>>(n, vector<int>(n/2 + 1, -1)));
+
+        return solve(nums, 0, n-1, 1);
+    }
+};
