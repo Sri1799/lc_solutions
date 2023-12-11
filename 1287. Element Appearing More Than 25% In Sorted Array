@@ -1,0 +1,24 @@
+// 1287. Element Appearing More Than 25% In Sorted Array
+
+class Solution {
+public:
+    int findSpecialInteger(vector<int>& arr) {
+        int n = arr.size();
+        int target = n/4;
+
+        vector<int> candidates = { arr[n/4], arr[n/2], arr[(3*n/4)] };
+
+        for (auto &c : candidates)
+        {
+            int lb = lower_bound(arr.begin(), arr.end(), c) - arr.begin();
+            int ub = upper_bound(arr.begin(), arr.end(), c) - arr.begin();
+
+            if (ub - lb > target)
+            {
+                return c;
+            }
+        }
+
+        return -1;
+    }
+};
