@@ -1,0 +1,59 @@
+// 200. Number of Islands
+
+// DFS
+// TC - O(N) ==> N is the number of cells in the matrix. DFS is O(V + E) --> O(N + 4*N) --> O(N), E is 4*N as we can traverse up, down, left or right from a cell
+// SC - O(N) ==> N is the number of cells in the matrix. Worst case is if all cells are '1', meaning each cell must be recursively traversed till no cell remains --> system stack will be O(N)
+
+class Solution {
+public:
+
+    vector<int> ud = {0, -1, 0, 1};
+    vector<int> lr = {-1, 0, 1, 0};
+
+    void dfs(vector<vector<char>>& grid, int x, int y)
+    {
+        int m = grid.size(), n = grid[0].size();
+
+        grid[x][y] = '2';
+        
+        for (int i=0;i<4;i++)
+        {
+            auto newx = x + ud[i];
+            auto newy = y + lr[i];
+            if (newx>=0 && newx<m && newy>=0 && newy<n && grid[newx][newy] == '1')
+                dfs(grid, newx, newy);
+        }
+    }
+
+    int numIslands(vector<vector<char>>& grid) {
+        
+        int m = grid.size();
+        int n = grid[0].size();
+        int cnt = 0;
+
+        for (int i=0;i<m;i++)
+        {
+            for (int j=0;j<n;j++)
+            {
+                if (grid[i][j] == '1')
+                {
+                    cnt++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+
+        for (int i=0;i<m;i++)
+        {
+            for (int j=0;j<n;j++)
+            {
+                if (grid[i][j] == '2')
+                {
+                    grid[i][j] = '1';
+                }
+            }
+        }
+
+        return cnt;
+    }
+};
