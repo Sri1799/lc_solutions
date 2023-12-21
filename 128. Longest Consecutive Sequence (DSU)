@@ -1,8 +1,8 @@
 // 128. Longest Consecutive Sequence
 // USING DSU approach. 2 vals will be in same group/tree if they are consecutive
 
-// TC - O(N * LOG N)
-// SC - O(N)
+// TC - O(N) ==> TC of join is O(1), unordered_map lookup and insert is O(1), initialization are O(1). The worst case is in joining all elements of the nums array as they are all consecutive, in this case TC is O(1) * N = O(N)
+// SC - O(N) ==> For the parent, rank and size vectors in the DSU class and also for the unordered_map used to store val-to-index.
 
 class Solution {
 public:
