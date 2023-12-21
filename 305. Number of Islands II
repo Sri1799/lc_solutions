@@ -1,0 +1,113 @@
+// 305. Number of Islands II
+
+// M x N is the size of the graph, let P be the number of positions
+// TC - O(M*N + P) ==> O(M*N) for initializing the graph, O(P) as each position (i.e. each item in the positions vector) must go through make_set (O(1)) and upto a maximum of 4 join (O(1)) --> O(M*N + P)
+// SC - O(M*N + P) ==> O(M*N) for the 2D graph, O(P) for the rank, and parent vector of the DSU.
+
+class Solution {
+public:
+    vector<int> numIslands2(int m, int n, vector<vector<int>>& positions) {
+        vector<vector<int>> g(m, vector<int>(n));
+        
+        vector<int> ud = {0, -1, 0, 1};
+        vector<int> lr = {-1, 0, 1, 0};
+
+        vector<int> ans;
+
+        int ps = positions.size();
+        UF *uf = new UF(m * n);
+
+        // sort(positions.begin(), positions.end());
+
+        map<pair<int,int>, int> valueToIndex;
+
+        vector<int> landCodes;
+
+        for (int i=0;i<ps;i++)
+        {
+            auto pos = positions[i];
+            int x = pos[0], y = pos[1];
+
+            g[x][y]++;
+
+            auto landCode = x * n + y;
+
+            for (int j=0;j<4;j++)
+            {
+                auto newX = x + ud[j];
+                auto newY = y + lr[j];
+
+                auto otherLandCode = newX * n + newY;
+
+                if (newX>=0 && newX<m && newY>=0 && newY<n && g[newX][newY] > 0)
+                {
+                    uf->join(landCode, otherLandCode);
+                }
+            }
+
+            landCodes.push_back(landCode);
+
+            ans.push_back(uf->numIslands(landCodes));
+        }
+
+        return ans;
+    }
+
+    class UF
+    {
+        private:
+            vector<int> parent;
+            vector<int> size;
+            vector<int> rank;
+
+        public:
+            UF(int n)
+            {
+                size.assign(n, 1);
+                rank.assign(n, 0);
+                parent.assign(n, 0);
+
+                for (int i=0;i<n;i++)
+                    parent[i] = i;
+            }
+
+            int find_set(int v)
+            {
+                if (parent[v] == v)
+                    return v;
+
+                return parent[v] = find_set(parent[v]);
+            }
+
+            void join(int v, int u)
+            {
+                int a = find_set(v);
+                int b = find_set(u);
+
+                if (a != b)
+                {
+                    if (rank[a] < rank[b])
+                    {
+                        swap(a, b);
+                    }
+
+                    parent[b] = a;
+                    if (rank[a] == rank[b])
+                        rank[a]++;
+
+                    size[a] += size[b];
+                }
+            }
+
+            int numIslands(vector<int> &landCodes)
+            {
+                unordered_set<int> st;
+                for (auto &code : landCodes)
+                {
+                    st.insert(find_set(code));
+                }
+
+                return st.size();
+            }
+    };
+};
