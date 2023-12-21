@@ -1,0 +1,92 @@
+// 128. Longest Consecutive Sequence
+// USING DSU approach. 2 vals will be in same group/tree if they are consecutive
+
+// TC - O(N * LOG N)
+// SC - O(N)
+
+class Solution {
+public:
+
+    int longestConsecutive(vector<int>& nums) {
+
+        int n = nums.size();
+
+        if (n == 0)
+            return n;
+
+        UnionFind *uf = new UnionFind(n);
+
+        unordered_map<int,int> valToIndex;
+
+        for (int i=0;i<n;i++)
+        {
+            auto num = nums[i];
+
+            if (valToIndex.find(num) != valToIndex.end())
+            {
+                continue;
+            }
+
+            if (valToIndex.find(num-1) != valToIndex.end())
+                uf->join(i, valToIndex[num-1]);
+
+            if (valToIndex.find(num+1) != valToIndex.end())
+                uf->join(i, valToIndex[num+1]);
+            
+            valToIndex[num] = i;
+        }
+
+        return uf->getMaxSizedSet();
+    }
+
+    class UnionFind
+    {
+        private:
+        vector<int> parent;
+        vector<int> size;
+        vector<int> rank;
+
+        public:
+        UnionFind(int n)
+        {
+            parent.assign(n, 0);
+
+            for (int i=0;i<n;i++)
+                parent[i] = i;
+
+            size.assign(n, 1);
+            rank.assign(n, 0);
+        }
+
+        int findRoot(int x)
+        {
+            if (parent[x] == x)
+                return x;
+
+            return parent[x] = findRoot(parent[x]);
+        }
+
+        void join(int x, int y)
+        {
+            int rootX = findRoot(x);
+            int rootY = findRoot(y);
+
+            if (rootX != rootY)
+            {
+                if (rank[rootX] < rank[rootY])
+                    swap(rootX, rootY);
+
+                parent[rootY] = rootX;
+                size[rootX] += size[rootY];
+
+                if (rank[rootX] == rank[rootY])
+                    rank[rootX]++;
+            }
+        }
+
+        int getMaxSizedSet()
+        {
+            return *max_element(size.begin(), size.end());
+        }
+    };
+};
