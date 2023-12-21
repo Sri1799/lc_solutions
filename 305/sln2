@@ -1,0 +1,125 @@
+// 305. Number of Islands II
+
+// - The trick is to count++ every time make_set is called. And do count-- every time a join happens.
+// - Maintain a size vector in DSU to return every time a duplicate is called to make_set.
+// TC - O(M*N + P*logP) ==> O(M*N) for initializing the graph, O(P*logP) as we are iterating P times and each time, we have to do a lookup on the map (valueToIdx) which is O(logP) time
+// SC - O(M*N + P)      ==> O(M*N) for the graph, and O(P) for the parent, size, and rank vector of the DSU
+
+class Solution {
+public:
+    vector<int> numIslands2(int m, int n, vector<vector<int>>& positions) {
+        vector<vector<int>> g(m, vector<int>(n));
+        
+        vector<int> ud = {0, -1, 0, 1};
+        vector<int> lr = {-1, 0, 1, 0};
+
+        vector<int> ans;
+
+        int ps = positions.size();
+        UF *uf = new UF(ps);
+
+        map<pair<int,int>, int> valueToIndex;
+
+        for (int i=0;i<ps;i++)
+        {
+            auto pos = positions[i];
+            int x = pos[0], y = pos[1];
+
+            g[x][y]++;
+
+            uf->make_set(i);
+
+            if (valueToIndex.find({x, y}) == valueToIndex.end())
+            {
+                for (int j=0;j<4;j++)
+                {
+                    auto newX = x + ud[j];
+                    auto newY = y + lr[j];
+
+                    if (newX>=0 && newX<m && newY>=0 && newY<n && g[newX][newY] > 0)
+                    {
+                        auto otherLandIdx = valueToIndex[{newX, newY}];
+                        uf->join(i, otherLandIdx);
+                    }
+                }
+
+                valueToIndex[{x, y}] = i;
+            }
+            else
+            {
+                uf->join(i, valueToIndex[{x, y}]);   
+            }
+
+            ans.push_back(uf->numberOfIslands());
+        }
+
+        return ans;
+    }
+
+    class UF
+    {
+        private:
+            vector<int> parent;
+            vector<int> size;
+            vector<int> rank;
+            int count = 0;
+
+        public:
+            UF(int n)
+            {
+                size.assign(n, 0);
+                rank.assign(n, 0);
+                parent.assign(n, 0);
+
+                for (int i=0;i<n;i++)
+                    parent[i] = i;
+            }
+
+            void make_set(int v)
+            {
+                if (size[v] > 0)
+                    return;
+
+                parent[v] = v;
+                rank[v] = 0;
+                size[v] = 1;
+                
+                count++;
+            }
+
+            int find_set(int v)
+            {
+                if (parent[v] == v)
+                    return v;
+
+                return parent[v] = find_set(parent[v]);
+            }
+
+            void join(int v, int u)
+            {
+                int a = find_set(v);
+                int b = find_set(u);
+
+                if (a != b)
+                {
+                    count--;
+
+                    if (rank[a] < rank[b])
+                    {
+                        swap(a, b);
+                    }
+
+                    parent[b] = a;
+                    if (rank[a] == rank[b])
+                        rank[a]++;
+
+                    size[a] += size[b];
+                }
+            }
+
+            int numberOfIslands()
+            {
+                return count;
+            }
+    };
+};
