@@ -1,0 +1,58 @@
+// M, N are the lengths of the string s1 and s2
+// TC - O(M + N)
+// SC - O(max(M, N))
+
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        int lena = a.length(), lenb = b.length();
+        reverse(a.begin(), a.end());
+        reverse(b.begin(), b.end());
+        string ans = "";
+
+        int i = 0,  j = 0;
+
+        int carry = 0;
+
+        while (i<lena && j<lenb)
+        {
+            int digita = a[i++]-'0';
+            int digitb = b[j++]-'0';
+            int sum = digita + digitb + carry;
+
+            carry = sum / 2;
+            sum %= 2;
+
+            ans += to_string(sum);
+        }
+
+        while (i<lena)
+        {
+            int digit = a[i++]-'0';
+            int sum = digit + carry;
+
+            carry = sum / 2;
+            sum %= 2;
+
+            ans += to_string(sum);
+        }
+
+        while (j<lenb)
+        {
+            int digit = b[j++]-'0';
+            int sum = digit + carry;
+
+            carry = sum / 2;
+            sum %= 2;
+
+            ans += to_string(sum);
+        }
+
+        if (carry)
+            ans += to_string(carry);
+
+        reverse(ans.begin(), ans.end());
+
+        return ans;
+    }
+};
