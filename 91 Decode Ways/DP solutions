@@ -1,0 +1,58 @@
+APPROACH
+1. Recursion + memoization on the index of the string. i.e. dp[index] = number of ways the sub-string [index ... n-1] (n is len of string) can be decoded
+2. Overlapping subproblems exist as the recurrence is T(n) = T(n-1) + T(n-2). Optimal substructure exists as the number of ways to decode s is a function of the number of ways to decode the substrings of s
+3. dp[idx] = dp[idx + 1] (choose 1st char to decode) + dp[idx + 2] (choose first 2 chars to decode); base case is when idx reaches string.length
+
+COMPLEXITIES
+TC - O(N) (every idx is visited exactly once and then cached/memoized)
+SC - O(N) (max depth of stack is O(N) (len of string) and dp structure 'dp' is of size N)
+
+class Solution {
+public:
+
+    vector<int> dp;
+
+    int numDecodings(string s, int idx)
+    {
+        if (idx == s.length())
+        {
+            return 1;
+        }
+
+        if (dp[idx] != -1)
+        {
+            return dp[idx];
+        }
+
+        if (s[idx] == '0')
+        {
+            return dp[idx] = 0;
+        }
+
+        // select 1 num
+        auto option_1 = numDecodings(s, idx + 1);
+
+        // select 2 num
+        auto option_2 = 0;
+        if (idx < s.length() - 1)
+        {
+            auto c1 = s[idx];
+            auto c2 = s[idx + 1];
+
+            auto notAllowed = (c1 == '2' && c2 >= '7') || c1 > '2';
+
+            if (!notAllowed)
+            {
+                option_2 = numDecodings(s, idx + 2);
+            }
+        }
+
+        return dp[idx] = option_1 + option_2;
+    }
+
+    int numDecodings(string s) {
+        dp.assign(s.length(), -1);
+
+        return numDecodings(s, 0);
+    }
+};
