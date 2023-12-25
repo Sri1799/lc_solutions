@@ -1,0 +1,58 @@
+APPROACH
+1. DFS - check if cycle exists
+
+COMPLEXITIES
+1. TC - O(V + E), DFS Passes through each edge and vertex exact once, vis array is of size V, adj is of size V+E, initializations add to the time complexity
+2. SC - O(V + E), Worst case stack space is a striaght line - each course being a prereq for the next => O(V), space of adj is V+E;
+
+// KEY POINTS
+1. adj[v].pb(u), and adj[u].pb(v) both work. The point here is to search for cycles in the traversal. The relationship b/w the courses can be mapped in adj in either way.
+
+class Solution {
+public:
+    vector<vector<int>> adj;
+    vector<int> vis;
+
+    bool dfs(int v)
+    {
+        vis[v] = 1;
+        for (auto &u : adj[v])
+        {
+            if (vis[u] == 1)
+                return false;
+            
+            if (vis[u] == 0)
+            {
+                if (!dfs(u))
+                    return false;
+            }
+        }
+        vis[v] = 2;
+
+        return true;
+    }
+
+    bool canFinish(int n, vector<vector<int>>& prerequisites) {
+        adj.assign(n, vector<int>());
+        vis.assign(n, 0);
+
+        for (auto &v : prerequisites)
+        {
+            adj[v[1]].push_back(v[0]); // or adj[v[0]].push_back(v[1]);
+        }
+
+        for (int i=0;i<n;i++)
+        {
+            if (!vis[i])
+            {
+                if (!dfs(i))
+                    return false;
+            }
+        }
+
+        // TC : O(2n + e + n + e) - O(n + e)
+        // SC : O(n + e)
+
+        return true;
+    }
+};
