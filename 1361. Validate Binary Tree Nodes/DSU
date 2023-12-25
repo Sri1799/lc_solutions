@@ -1,0 +1,97 @@
+APPROACH
+1. DSU solution
+
+COMPLEXITIES
+1. TC - O(N)
+2. SC - O(N)
+
+class Solution {
+public:
+
+    bool validateBinaryTreeNodes(int n, vector<int>& leftChild, vector<int>& rightChild) {
+        UF *uf = new UF(n);
+
+        for (int i=0;i<n;i++)
+        {
+            uf->make_set(i);
+        }
+
+        for (int i=0;i<n;i++)
+        {
+            if (leftChild[i] != -1)
+            {
+                if (!uf->join_set(i, leftChild[i]))
+                    return false;
+            }
+
+            if (rightChild[i] != -1)
+            {
+                if (!uf->join_set(i, rightChild[i]))
+                    return false;
+            } 
+        }
+
+        return uf->components == 1;
+    }
+
+    class UF
+    {
+        private:
+            vector<int> parent;
+            vector<int> size;
+            vector<int> rank;
+
+        public:
+            int components = 0;
+            
+            UF(int n)
+            {
+                parent.assign(n, -1);
+                size.assign(n, 0);
+                rank.assign(n, -1);
+            }
+
+            void make_set(int v)
+            {
+                parent[v] = v;
+                size[v] = 1;
+                rank[v] = 0;
+
+                components++;
+            }
+
+            int find_set(int v)
+            {
+                if (parent[v] == v)
+                    return v;
+
+                return parent[v] = find_set(parent[v]);
+            }
+
+            bool join_set(int v, int u)
+            {
+                auto rootV = find_set(v);
+                auto rootU = find_set(u);
+
+                if (rootV != rootU && rootU == u)
+                {
+                    components--;
+                    // if (rank[rootV] < rank[rootU])
+                    //    swap(rootV, rootU);
+
+                    parent[rootU] = rootV;
+
+                    size[rootV] += size[rootU];
+
+                    if (rank[rootV] == rank[rootU])
+                        rank[rootV]++;
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+    };
+};
