@@ -1,0 +1,93 @@
+APPROACH
+1. Rules of a Tree: Single root (i.e. single node with no parents), Every other node MUST have only 1 parent, # edges = # nodes - 1, No cycles, Single connected component
+
+COMPLEXITIES
+1. TC - O(V), BFS is O(V + E), in this case E = V - 1, hence O(2*V) ==> O(V)
+2. SC - O(V), for the map and vis vectors
+
+class Solution {
+public:
+
+    bool validateBinaryTreeNodes(int n, vector<int>& leftChild, vector<int>& rightChild) {
+        
+        unordered_map<int,int> added;
+        int edges = 0;
+
+        // check there is only 1 parent for every node, EXCEPT ROOT (which has no parent). in a tree, only one path exists to reach a node.        
+        for (auto &l : leftChild)
+        {
+            if (l == -1)
+            continue;
+
+            if (added[l])
+            {
+                return false;
+            }
+            added[l]++;
+            edges++;
+        }
+
+        for (auto &l : rightChild)
+        {
+            if (l == -1)
+            continue;
+
+            if (added[l])
+            {
+                return false;
+            }
+            added[l]++;
+            edges++;
+        }
+
+        // check no. of edges == n-1
+        if (edges != n-1)
+            return false;
+
+        // identify the single root, i.e. the one with no parents
+        auto root = -1;
+
+        for (int i=0;i<n;i++)
+        {
+            if (added.find(i) == added.end())
+            {
+                if (root != -1)
+                    return false;
+
+                root = i;
+            }
+        }
+
+        // check there are no cycles
+        set<int> vis;
+        queue<int> q;
+        q.push(root);
+        vis.insert(root);
+
+        while (!q.empty())
+        {
+            auto v = q.front();
+            q.pop();
+
+            auto lv = leftChild[v];
+            if (lv != -1)
+            {
+                if (vis.find(lv) != vis.end())
+                    return false;
+                vis.insert(lv);
+                q.push(lv);
+            }
+
+            auto rv = rightChild[v];
+            if (rv != -1)
+            {
+                if (vis.find(rv) != vis.end())
+                    return false;
+                vis.insert(rv);
+                q.push(rv);
+            }
+        }
+
+        return vis.size() == n;
+    }
+};
