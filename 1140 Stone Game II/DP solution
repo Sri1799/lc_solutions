@@ -1,0 +1,82 @@
+// APPROACH
+// DP
+// DP state = dp[index][mask]
+// dp[index][mask] = MAX number of stones a person can pick up from the vector [index ... vector.end], with the mask specified
+// it is possible to reach the same index with multiple different masks -> hence, the MASK must also be part of the DP state
+
+// COMPLEXITIES
+// Let N be the number of piles (i.e. size of nums vector)
+// TC - 
+  - O(N) for initialization of the prefix sum
+  - O(N^2) for initializaitons of the dp array
+  - O(N^2 * N), no. of unique states visit-able = no. of dp states possible = size of dp array = N*N = N^2. For each DP state, we have to iterate over all possible 'x' where x can go from 1 to a max of N. So, O(N)
+      ==> O(N^3)
+  ==> O(N) + O(N^2) + O(N^3) = O(N^3)
+// SC -
+  - O(N) stack space as we would return from the call stack once the idx (current index) >= N
+  - O(N) for the prefix sum vector
+  - O(N^2) for the dp vector. 
+  ==> O(N + N + N^2) = O(N^2)
+
+// KEY POINTS
+1. DP initialized to -1
+2. DP size is determined based on maximum MASK possible = which we can conclude to be N as the recursion only takes max(M, X), and we can be sure X cannot cross N
+3. Optimization to break out of loop once the end is reached for the 'x'. Is end is reached once, it needn't be reached again as we will be getting the same values over and over again in that case.
+
+class Solution {
+public:
+
+    vector<int> pref;
+    vector<vector<int>> dp;
+
+    int solve(vector<int> &nums, int idx, int m)
+    {
+        if (idx >= nums.size())
+        {
+            return 0;
+        }
+
+        if (dp[idx][m] != -1)
+        {
+            return dp[idx][m];
+        }
+
+        int ans = 0;
+        bool reachedEnd = false;
+
+        for (int x=1;x<=2*m;x++)
+        {
+            int start = idx;
+            int end = min((int)nums.size()-1, idx + x - 1);
+
+            if (end == nums.size()-1)
+            {
+                if (reachedEnd)
+                    break;
+                
+                reachedEnd = true;
+            }
+
+            auto totalSumAvailable = pref[nums.size() - 1] - (start > 0 ? pref[start-1] : 0);
+
+            ans = max(ans, totalSumAvailable - solve(nums, end + 1, max(m, x)));
+        }
+
+        return dp[idx][m] = ans;
+    }
+
+    int stoneGameII(vector<int>& nums) {
+
+        // store idx, M, nums
+        // repeated subproblems
+
+        dp.assign(nums.size(), vector<int>(nums.size() + 1, -1));
+
+        pref = nums;
+
+        for (int i=1;i<nums.size();i++)
+            pref[i] += pref[i-1];
+
+        return solve(nums, 0, 1);
+    }
+};
