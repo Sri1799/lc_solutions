@@ -1,0 +1,28 @@
+APPROACH
+1. DP array could be used, but then 2 for loops would be required.
+2. For "min steps" problems, we could use mr (max-reachable), and nmr (new-max-reachable) and keep updating them
+
+COMPLEXITIES
+1. TC - O(N)
+2. SC - O(1)
+
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        
+        int n = nums.size(), mr = 0, nmr = 0, cnt = 0;
+
+        for (int i=0;i<n;i++)
+        {
+            nmr = min(n-1, max(nmr, i + nums[i]));
+
+            if (i == mr) // this means a node from the previously defined mr (max-reachable) range was chosen
+            {
+                cnt++;
+                mr = nmr;
+            }
+        }
+
+        return cnt - 1;
+    }
+};
