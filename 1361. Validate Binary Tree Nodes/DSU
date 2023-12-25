@@ -73,6 +73,11 @@ public:
                 auto rootV = find_set(v);
                 auto rootU = find_set(u);
 
+                // How to know if a node is already part of a connected component with other nodes => parent[node] != node
+                // in that case, if join_set is called, we should return false as it would mean the node has > 1 parent
+                // That is why we should also now go for this rank optimization, because then, the roots will get mixed up
+                // and it would look a given node 'x' has a parent already, when in fact it doesnt. THE NODE 'x' is the PARENT.
+                // e.g. testcase :: 5, [1, 2, -1, 0, 3], [-1, -1, -1, -1, -1]
                 if (rootV != rootU && rootU == u)
                 {
                     components--;
