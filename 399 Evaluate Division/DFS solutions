@@ -1,0 +1,80 @@
+APPROACH
+1. Straight forward DFS
+
+COMPLEXITIES
+No. of equations is 1/2 of no. of EDGES. If we assume each equation has 2 new nodes, total no. of nodes (vertices) is 2*Eq
+1. TC - O(Eq + Queries * (2*Eq + 2*Eq)) = O(Eq + Queries * Eq) = O(Queries * Equations)
+2. SC - O(2*Eq + 2*Eq + Eq) (graph, vis vector, stack space) - O(Equations)
+
+class Solution {
+public:
+    unordered_map<string, vector<pair<string,double>>> graph;
+    unordered_map<string,int> vis;
+
+    bool dfs(string src, string dest, double &value)
+    {
+        if (src == dest)
+        {
+            value = 1;
+            return true;
+        }
+
+        vis[src]++;
+
+        for (auto &item : graph[src])
+        {
+            auto child = item.first;
+            auto wt = item.second;
+
+            if (!vis[child])
+            {
+                if (dfs(child, dest, value))
+                {
+                    value = (double)value*wt;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        
+        int i = 0;
+        for (auto &eq : equations)
+        {
+            auto src = eq[0], dest = eq[1];
+
+            graph[src].push_back({dest, values[i]});
+            graph[dest].push_back({src, (1ll * 1)/values[i]});
+
+            i++;
+        }
+
+        vector<double> ans;
+
+        for (auto &q : queries)
+        {
+            vis.clear();
+
+            auto src = q[0], dest = q[1];
+            double value = 0;
+
+            if (graph.find(src) == graph.end() || graph.find(dest) == graph.end())
+            {
+                ans.push_back(-1);
+            }
+            else
+            {
+                auto isValueFound = dfs(src, dest, value);
+                if (isValueFound)
+                    ans.push_back(value);
+                else
+                    ans.push_back(-1);
+            }
+        }
+
+        return ans;
+    }
+};
