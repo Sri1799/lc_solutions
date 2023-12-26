@@ -1,0 +1,46 @@
+APPROACH
+1. top down DP (memoization). Any question relating to partitioning 'x' into y containers is DP. In this summing Target T using N dice.
+
+COMPLEXITIES
+1. TC - O(N*T*K), no. of states = size of dp vector = T * N; no. of ops per state = for loop of K = O(K). Hence, TC = O(N*T*K)
+2. SC - O(N*T + N), max stack size is O(N) as we start at n = N, and base case is at n = 1. Hence stack size is O(N). But dp vector is of size Target * N = O(N*T).
+
+class Solution {
+public:
+    int MOD = 1e9 + 7, k;
+
+    vector<vector<int>> dp;
+
+    int solve(int n, int target)
+    {
+        if (n == 1)
+        {
+            if (target > k)
+            {
+                return dp[target][n] = 0;
+            }
+
+            return dp[target][n] = 1;
+        }
+
+        if (dp[target][n] != -1)
+            return dp[target][n];
+
+        long ans = 0;
+
+        for (int i=1;i<=min(k, target - (n-1));i++)
+        {
+            ans = (ans + solve(n - 1, target - i))%MOD;
+        }
+
+        return dp[target][n] = ans;
+    }
+
+    int numRollsToTarget(int n, int k_, int target) {
+        k = k_;
+
+        dp.assign(target + 1, vector<int>(n + 1, -1));
+
+        return solve(n, target);
+    }
+};
