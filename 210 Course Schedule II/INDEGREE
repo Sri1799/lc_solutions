@@ -1,0 +1,53 @@
+APPROACH
+1. "Peeling onion" technique. Use the indegree count of each node, and BFS. Keep evaluating the indegree of nodes and add them to queue once it is 0.
+2. In case of cycles, new elements cannot be added to queue due to deadlock (course A has B as a prereq, and B has A as a prereq). In that case the final ans (which is a path/order of courses) won't contain all courses.
+
+COMPLEXITIES
+1. TC => O(V + E)
+2. SC => O(V + E)
+
+class Solution {
+public:
+
+    vector<int> findOrder(int n, vector<vector<int>>& pqs) {
+        
+        vector<vector<int>> graph(n, vector<int>());
+        vector<int> pCnt(n, 0);
+
+        for (auto &p : pqs)
+        {
+            pCnt[p[0]]++;
+            graph[p[1]].push_back(p[0]);
+        }
+
+        queue<int> q;
+
+        for (int i=0;i<n;i++)
+        {
+            if (pCnt[i] == 0)
+                q.push(i);
+        }
+
+        vector<int> ans;
+        while (!q.empty())
+        {
+            auto course = q.front();
+            q.pop();
+            ans.push_back(course);
+
+            for (auto &child : graph[course])
+            {
+                pCnt[child]--;
+                if (pCnt[child] == 0)
+                {
+                    q.push(child);
+                }
+            }
+        }
+
+        if (ans.size() != n)
+            return vector<int>();
+
+        return ans;
+    }
+};
