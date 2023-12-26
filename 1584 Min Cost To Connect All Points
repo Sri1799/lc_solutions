@@ -1,0 +1,63 @@
+APPROACH
+1. PRIMs
+
+COMPLEXITIES
+let P be the number of points - then pC2 => p(p-1)/2 is the number of edges, p is the number of points
+1. TC - O(ElogV) - O(P^2 * log P)
+2. SC - O(V + E) - O (P ^ 2)
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        
+        int n = points.size(), cost = 0;
+
+        vector<vector<pair<int,int>>> adj(n);
+
+        for (int i=0;i<n;i++)
+        {
+            for (int j=i+1;j<n;j++)
+            {
+                auto x = points[i], y = points[j];
+                auto dist = abs(x[0]-y[0]) + abs(x[1]-y[1]);
+                adj[i].push_back({j, dist});
+                adj[j].push_back({i, dist});
+            }
+        }
+        
+        vector<bool> inmst(n, false);
+        vector<int> dist(n, INT_MAX);
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+        dist[0] = 0;
+        pq.push({0, 0}); // {dist, vertex}
+
+        while(!pq.empty())
+        {
+            auto item = pq.top();
+            pq.pop();
+
+            auto v = item.second;
+
+            if (inmst[v])
+                continue;
+
+            inmst[v] = true;
+            cost += item.first;
+
+            for (auto &edge : adj[v])
+            {
+                auto u = edge.first;
+                auto wt = edge.second;
+
+                if (!inmst[u] && (dist[u] > wt))
+                {
+                    dist[u] = wt;
+                    pq.push({dist[u], u});
+                }
+            }
+        }
+
+        return cost;
+    }
+};
