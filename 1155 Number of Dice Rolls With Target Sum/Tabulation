@@ -1,0 +1,54 @@
+// APPROACH
+1. DP, paritioning 'x' into 'y' containers is always DP. This sln is bottom up DP. 
+2. dp[target] == no. of ways to sum target using the no. of dice as given by 'i' in the outer for loop
+
+COMPLEXITIES
+1. TC - O(N*T*K)
+2. SC - O(T), we have optimized the space as we DONT need to keep track of no. of dice (i.e. 'i'). The for loop itself will take care of that for us. 
+
+KEY POINTS
+1. For DP problems where DP[x] depends only on the previous state 'x-1', 2D dp is NOT REQUIRED.
+
+class Solution {
+
+public:
+    int MOD = 1e9 + 7;
+
+    int numRollsToTarget(int n, int k, int target) {
+
+        vector<long> dp(target + 1, 0);
+
+        // dp[target1] = no. of ways to sum target1 using 'i' dice (i is specified in for loop)
+        // dp[target1] = dp[target1-1] + dp[target1-2] + ... + dp[target1-k]
+
+        for (int i = 1; i <= n; i++)
+        {
+            vector<int> newdp(target + 1, 0);
+
+            for (int j = 1; j <= target; j++)
+            {
+                if (j > i*k)
+                {
+                    break;
+                }
+
+                if (i == 1)
+                {
+                    if (j <= k)
+                        newdp[j] = 1;
+                    
+                    continue;
+                }
+
+                for (int r = 1; r <= min(k, j); r++)
+                {
+                    newdp[j] = (newdp[j] + dp[j-r])%MOD;
+                }
+            }
+
+            dp.assign(newdp.begin(), newdp.end());
+        }
+
+        return dp[target];
+    }
+};
