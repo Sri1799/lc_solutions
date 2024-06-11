@@ -1,0 +1,79 @@
+/*
+  num of words in dictionary = D, avg len of word = Ld
+  num of words in sentencees = S, avg len of word = Ls
+  TC - O(D*Ld + S*(Ls + Ls + Ls)) => O(D*Ld + k*S*Ls)
+  SC - O(Ld + Ls + D*Ld + S*Ls)
+*/
+
+class trie
+{
+    bool isRoot = false;
+    trie *l[26] = {};
+public:
+
+    void add(string &word, int idx)
+    {
+        if (word.length() == idx)
+        {
+            isRoot = true;
+            return;
+        }
+
+        if (l[word[idx] - 'a'] == nullptr)
+            l[word[idx] - 'a'] = new trie();
+        
+        l[word[idx] - 'a']->add(word, idx + 1);
+    }
+
+    int prefix(string &snt, int idx, int cip)
+    {
+        if (idx + cip == snt.length()
+        || snt[idx + cip] == ' ')
+            return cip;
+
+        if (l[snt[idx + cip] - 'a'] == nullptr)
+        {
+            // while loop till end of word, increment cip, return it
+            while (idx + cip < snt.length() && snt[idx + cip] != ' ')
+                cip++;
+
+            return cip;
+        }
+        else if (l[snt[idx + cip] - 'a']->isRoot)
+            return cip + 1;
+
+        return l[snt[idx + cip] - 'a']->prefix(snt, idx, cip + 1);
+    }
+};
+
+class Solution {
+public:
+    string replaceWords(vector<string>& dict, string snt) {
+        trie tr;
+        for (auto &word:dict)
+            tr.add(word, 0);
+
+        string ans = "";
+
+        for (int i=0;i<snt.length();i++)
+        {
+            if(snt[i]==' ')
+            {
+                ans += ' ';
+                continue;
+            }
+            else
+            {
+                // check prefix
+                int cip = tr.prefix(snt, i, 0);
+                ans += snt.substr(i, cip);
+                for (i += cip;i<snt.length() && snt[i]!=' ';i++);
+                
+                if (i<snt.length())
+                    i--;
+            }
+        }
+
+        return ans;
+    }
+};
