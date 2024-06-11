@@ -1,0 +1,116 @@
+/*
+let dictionary len be D, len of each word in dictionary be Ld, 
+number of words in sentence be S, len of each word in sentence be Ls, k is a small constant (<3)
+TC - O(D*Ld + k*S*Ls) => adding all elems of dictionary into trie, tokenizing sentence, using word of sentence for best prefix
+SC - O(D*Ld + k*S*Ls) => storing all elems of dictionary into tri, storing all prefixes into new_tokens, and then appending appropriately
+*/
+
+class Trie
+{
+    private:
+        unordered_map<char,Trie *> children;
+        bool isWord;
+
+    public:
+        Trie()
+        {
+            this->children.clear();
+            this->isWord = false;
+        }
+
+        void addWord(string &word)
+        {
+            Trie *ptr = this;
+
+            for (auto &c:word)
+            {
+                if (ptr->children[c] == NULL)
+                {
+                    ptr->children[c] = new Trie();
+                }
+
+                ptr = ptr->children[c];
+            }
+
+            ptr->isWord = true;
+        }
+
+        string get_prefix(string &word)
+        {
+            string prefix = "";
+
+            Trie *ptr = this;
+            for (auto &c:word)
+            {
+                if (ptr->children[c] == NULL)
+                    return word;
+                
+                prefix += c;
+
+                ptr = ptr->children[c];
+                
+                if (ptr->isWord)
+                    return prefix;
+            }
+
+            return prefix;
+        }
+};
+
+class Solution {
+
+    vector<string> string_tokenizer(string &sentence)
+    {
+        vector<string> tokens;
+
+        string temp = "";
+        for (int i=0;i<sentence.length();i++)
+        {
+            if (sentence[i] == ' ')
+            {
+                if (temp.length())
+                    tokens.push_back(temp);
+                temp = "";
+            }
+            else
+            {
+                temp += sentence[i];
+            }
+        }
+
+        if (temp.length())
+            tokens.push_back(temp);
+
+        return tokens;
+    }
+
+public:
+    string replaceWords(vector<string>& dictionary, string sentence) {
+        
+        Trie *trie = new Trie();
+
+        for (auto &token:dictionary)
+        {
+            trie->addWord(token);
+        }
+
+        vector<string> tokens = string_tokenizer(sentence);
+        vector<string> new_tokens;
+
+        for (auto &token:tokens)
+        {
+            new_tokens.push_back(trie->get_prefix(token));
+        }
+
+        string ans = "";
+
+        for (auto &token:new_tokens)
+        {
+            ans += token;
+            ans += " ";
+        }
+
+        ans.pop_back();
+        return ans;
+    }
+};
