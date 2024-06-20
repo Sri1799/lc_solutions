@@ -1,0 +1,61 @@
+/*
+  tc - O(log10^9 * M*logN) => O(k*N*logN)
+  sc - O(1)
+*/
+
+class Solution {
+
+    int is_possible(vector<int> &position, int min_dist, int m)
+    {
+        // check if it is possible to place m balls s.t. the dist b/w any pair >= min_dist
+        int idx = 0;
+        m--;
+        
+        while (m--)
+        {
+            int new_idx = lower_bound(position.begin() + idx + 1, position.end(), position[idx] + min_dist) - position.begin();
+            if (new_idx == position.size())
+                return false;
+
+            idx = new_idx;
+        }
+
+        return true;
+    }
+
+public:
+    int maxDistance(vector<int>& position, int m) {
+        /*
+        - balls as spread apart as possible, min to be maximized
+        - maximum of all minimums => ans
+        - if we can put at distance k, we can probably also put at a distance < than that?
+            => increase min dist even more
+            => if not possible
+                reduce min dist
+
+
+            l = 4
+            r = 3
+            min_dist = 5
+            ans = 3
+        */
+        int n = position.size();
+        sort(position.begin(), position.end());
+        int l = 1, r = position[n-1] - position[0], ans = 1;
+        while (l<=r)
+        {
+            int min_dist = l + (r - l)/2; // i.e. distance b/w any pair has to be at least min_dist 
+            if (is_possible(position, min_dist, m)) // lets keep trying to maximize this min_dist
+            {
+                ans = min_dist;
+                l = min_dist + 1;
+            }
+            else // we cannot have a best_dist >= min_dist, let us reduce our min_dist requirement
+            {
+                r = min_dist - 1;
+            }
+        }
+
+        return ans;
+    }
+};
