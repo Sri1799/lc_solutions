@@ -1,0 +1,58 @@
+/*
+  let N be the size of customers/grumpy array
+  tc - O(N)
+  sc - O(N)
+*/
+
+class Solution {
+public:
+    int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int minutes) {
+        /*
+            - 2 arrays/vectors prefix sums
+            - gsat[i] = no. of customers satisfied taking into consideration grumpyness of owner
+            - ngsat[i] = no. of customers overall satisfied not considering grumpiness of owner at all
+            int ans = 0;
+            for (int i=0;i<=n-minutes;i++)
+            {
+                int end = i + minutes - 1 // len = i + minutes - 1 - i + 1 = minutes
+                int curr_ans = gsat[n-1]-gsat[end] + ngsat[end]-ngsat[i-1] + gsat[i-1]
+                ans = max(ans, curr_ans);
+            }
+
+            return ans;
+                                  m
+                                  i   j   
+            customers = 1 0 1 2 1 1 7  5
+            grumpy =    0 1 0 1 0 1 0  1
+            gsat =      1 1 2 2 3 3 10 10 
+            ngsat =     1 1 2 4 5 6 13 18
+            ans =       16
+            curr_ans =  0 + 13 + 3 = 16
+        */
+        int n = customers.size(), ans = 0;
+        vector<int> gsat(n, 0);
+        vector<int> ngsat = customers;
+
+        for (int i=0;i<n;i++)
+        {
+            ngsat[i] += (i>0 ? ngsat[i-1] : 0);
+            if (grumpy[i] == 0) // not grumpy
+            {
+                gsat[i] = customers[i] + (i>0?gsat[i-1]:0);
+            }
+            else
+            {
+                gsat[i] = i>0 ? gsat[i-1] : 0;
+            }
+        }
+
+        for (int i=0;i<=n-minutes;i++)
+        {
+            int j = i + minutes - 1;
+            int curr_ans = gsat[n-1]-gsat[j] + ngsat[j]-(i>0?ngsat[i-1]:0) + (i>0?(gsat[i-1]):0); 
+            ans = max(ans, curr_ans);
+        }
+
+        return ans;
+    }
+};
