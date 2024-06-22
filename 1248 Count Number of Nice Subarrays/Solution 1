@@ -1,0 +1,65 @@
+/*
+  tc - O(N^2)
+  sc - O(1)
+*/
+
+class Solution {
+
+    int find_ans(vector<int> &nums, int l, int r)
+    {
+        int left = 0, right = 0;
+        l--;
+        while (l>=0 && nums[l]==0)
+        {
+            l--;
+            left++;
+        }
+
+        while (r<nums.size() && nums[r]==0)
+        {
+            right++;
+            r++;
+        }
+
+        return (left + 1)*(right + 1);
+    }
+
+public:
+    int numberOfSubarrays(vector<int>& nums, int k) {
+
+        int n = nums.size();
+        for (int i=0;i<n;i++)
+        {
+            nums[i] = nums[i] % 2;
+        }
+
+        int l = 0, r = 0, curr_cnt = 0,ans=0;
+
+        while (r<n)
+        {
+            if (curr_cnt < k)
+            {
+                if (nums[r])
+                    curr_cnt++;
+
+                r++;
+            }
+
+            if (curr_cnt == k)
+            {
+                // increment l to maximum
+                while (nums[l] == 0)
+                {
+                    l++;
+                }
+
+                ans += find_ans(nums, l, r);
+
+                curr_cnt--;
+                l++;
+            }
+        }
+
+        return ans;
+    }
+};
