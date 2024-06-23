@@ -1,0 +1,49 @@
+/*
+  tc - O(N)
+  sc - O(1)
+*/
+
+class Solution {
+public:
+    long long maximumTotalCost(vector<int>& nums) {
+        /*
+            2 consecutive swaps not possible
+            let dp[i][0] be sum possible if ith num is not swapped
+                if not swapped, we can choose maximum of sums where i-1 is OR is not swapped
+                ie dp[i-1][0] OR dp[i-1][1]
+            
+                dp[i][1] be sum possible if ith num is swapped
+                only sums where i-1 is NOT swapped can be chosen, as we CANNOT have 2 consecutive swaps
+                ie dp[i-1][0]
+                
+                hence, 
+                dp[i][0] = nums[i] + max(dp[i-1][0], dp[i-1][1]);
+                dp[i][1] = -1*nums[i] + dp[i-1][0]
+                
+                CANNOT HAVE 2 CONSECUTIVE SWAPS IS THE DP CONDTION
+                
+                hence result would simply be max(dp[n-1][0], dp[n-1][1])
+                
+                some states are invalid, e.g. swapping first elem is not possible as previous should be swapped
+                hence, dp[0][1] = LLONG_MIN
+                
+                we need to choose a default to represent an invalid state, which shouldn't affect dp composition
+                min possible sum => -10^9 * 10^5 = -10^14 < 2^63 (LLONG_MIN), hence LLONG_MIN can be chosen as default
+
+                Because the DP solution depends only on prev state, we can avoid having a O(N) dp array, and just store the prev states in O(1)
+                and iteratively update them as we go
+        */
+        int n = nums.size();
+        long long a = nums[0], b = LLONG_MIN;
+        
+        for (int i=1;i<n;i++)
+        {
+            long long newA = nums[i] + max(a, b);
+            long long newB = -1*nums[i] + a;
+            a = newA;
+            b = newB;
+        }
+        
+        return max(a, b);
+    }
+};
