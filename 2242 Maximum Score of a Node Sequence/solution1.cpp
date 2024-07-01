@@ -1,3 +1,11 @@
+/*
+    let N be the number of nodes, E be the number of edges
+    tc - O(E*klogk + E*3*3), k is max size of a v2[p] where 0<=p<N, k is max 4
+        ~ O(k*E)
+    sc - O(N*3)
+        ~ O(N)
+*/
+
 class Solution {
 public:
     int maximumScore(vector<int>& scores, vector<vector<int>>& edges) {
