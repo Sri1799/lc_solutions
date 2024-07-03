@@ -1,0 +1,55 @@
+/*
+  tc - O(N)
+  sc - O(N)
+*/
+
+#define pic pair<char,int>
+// using pic = pair<char,int>;
+
+class Solution {
+public:
+    string removeDuplicates(string s, int k) {
+        stack<pic> st;
+        for (auto &c:s)
+        {
+            if (st.empty())
+            {
+                st.push({c, 1});
+            }
+            else
+            {
+                auto item = st.top();
+                if (item.first == c)
+                {
+                    if (item.second == k-1)
+                    {
+                        for (int i=0;i<k-1;i++)
+                        {
+                            st.pop();
+                        }
+                    }
+                    else
+                    {
+                        st.push({c, item.second + 1});
+                    }
+                }
+                else
+                {
+                    st.push({c, 1});
+                }
+            }
+        }
+
+        string ans = "";
+        while (st.size())
+        {
+            auto item = st.top();
+            st.pop();
+            ans += item.first;
+        }
+
+        reverse(ans.begin(), ans.end());
+
+        return ans;
+    }
+};
