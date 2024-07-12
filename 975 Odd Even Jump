@@ -1,0 +1,81 @@
+/*
+  tc - O(NlogN + N + N) ~ O(NlogN)
+  sc - O(N)
+*/
+
+class Solution {
+
+    void populateSNG(vector<int> &arr, vector<int> &sng)
+    {
+        // sng[i] => the smallest next greater element's index?
+        vector<int> v;
+        for (int i=0;i<arr.size();i++) v.push_back(i); // all the indexes
+        sort(v.begin(), v.end(), [&](const int &a, const int &b){
+            return arr[a] < arr[b] || arr[a] == arr[b] && a < b;
+        });
+
+        int n = arr.size();
+        stack<int> st;
+        for (int i=0;i<n;i++)
+        {
+            while (st.size() && st.top() < v[i])
+            {
+                sng[st.top()] = v[i];
+                st.pop();
+            }
+
+            st.push(v[i]);
+        }
+    }
+
+    void populateLNS(vector<int> &arr, vector<int> &lns)
+    {
+        // lns[i] => the largest next smaller element's index?
+        vector<int> v;
+        for (int i=0;i<arr.size();i++) v.push_back(i); // all the indexes
+        sort(v.begin(), v.end(), [&](const int &a, const int &b){
+            return arr[a] > arr[b] || arr[a] == arr[b] && a < b;
+        });
+
+        int n = arr.size();
+        stack<int> st;
+        for (int i=0;i<n;i++)
+        {
+            while (st.size() && st.top() < v[i])
+            {
+                lns[st.top()] = v[i];
+                st.pop();
+            }
+
+            st.push(v[i]);
+        }
+    }
+
+public:
+    int oddEvenJumps(vector<int>& arr) {
+        int n = arr.size();
+        vector<bool> odd(n, false), eve(n, false);
+        vector<int> sng(n, -1), lns(n, -1);
+        populateSNG(arr, sng);
+        populateLNS(arr, lns);
+        
+        // base case
+        odd[n-1] = true;
+        eve[n-1] = true;
+
+        for (int i=n-2;i>=0;i--)
+        {
+            // odd-eth jump from i
+            odd[i] = sng[i] == -1 ? false : eve[sng[i]];
+
+            // even-eth jump from i
+            eve[i] = lns[i] == -1 ? false : odd[lns[i]];
+        }
+
+        int ans = count_if(odd.begin(), odd.end(), [](const bool &p) {
+            return p == true;
+        });
+
+        return ans;
+    }
+};
