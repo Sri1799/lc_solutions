@@ -1,0 +1,78 @@
+/*
+  tc - O(NlogN)
+  sc - O(N)
+*/
+
+class Solution {
+public:
+    vector<int> survivedRobotsHealths(vector<int>& positions, vector<int>& healths, string directions) {
+        
+        int n = positions.size();
+        vector<int> temp;
+        for (int i=0;i<n;i++)
+            temp.push_back(i);
+
+        sort(temp.begin(), temp.end(), [&](const int &i, const int &j){
+            return positions[i] < positions[j] || (positions[i] == positions[j] && directions[i] == 'R');
+        });
+
+        deque<pair<int,int>> gRight;
+        vector<int> ans(positions.size(), 0);
+
+        for (int j=0;j<positions.size();j++)
+        {
+            int i = temp[j];
+            if (directions[i] == 'L')
+            {
+                bool isPopped = false;
+                while (gRight.size())
+                {
+                    if (healths[i] > gRight.back().second)
+                    {
+                        gRight.pop_back();
+                        healths[i]--;
+                    }
+                    else if (healths[i] < gRight.back().second)
+                    {
+                        isPopped = true;
+                        auto prevItem = gRight.back();
+                        gRight.pop_back();
+                        gRight.push_back({prevItem.first, prevItem.second - 1});
+                        break;
+                    }
+                    else
+                    {
+                        isPopped = true;
+                        gRight.pop_back();
+                        break;
+                    }
+                }
+
+                if (!isPopped)
+                {
+                    ans[i] = healths[i];
+                }
+            }
+            else
+            {
+                gRight.push_back({i, healths[i]});
+            }
+        }
+
+        while(gRight.size())
+        {
+            auto item = gRight.front();
+            gRight.pop_front();
+            ans[item.first] = item.second;
+        }
+
+        vector<int> final_ans;
+        for (auto &i:ans)
+        {
+            if (i)
+                final_ans.push_back(i);
+        }
+
+        return final_ans;
+    }
+};
