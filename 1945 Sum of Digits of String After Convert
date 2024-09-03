@@ -1,0 +1,36 @@
+/*
+tc - O(N)
+sc - O(N)
+*/
+
+class Solution {
+public:
+    int getLucky(string s, int k) {
+        stack<int> st;
+        for (auto c:s){
+            int val = c - 'a' + 1;
+            while (val)
+            {
+                st.push(val % 10);
+                val /= 10;
+            }
+        }
+
+        int sum = 0;
+        while(k--)
+        {
+            while (sum)
+            {
+                st.push(sum%10);
+                sum /= 10;
+            }
+
+            while (st.size())
+            {
+                sum += st.top(); st.pop();
+            }
+        }
+
+        return sum;
+    }
+};
