@@ -1,6 +1,6 @@
 /*
-    TC O(1)*O(logN)
-    SC O(logN)
+    TC O(N)
+    SC O(N)
 */
 
 class Solution {
