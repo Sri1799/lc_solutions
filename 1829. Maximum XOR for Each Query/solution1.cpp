@@ -1,16 +1,19 @@
 class Solution {
-    public int[] getMaximumXor(int[] nums, int maximumBit) {
-        
-        int n = nums.length, val = (1<<maximumBit) - 1, prevXor = 0;
-        int[] ans = new int[n];
+public:
+    vector<int> getMaximumXor(vector<int>& nums, int maximumBit) {
+        int val = (1<<maximumBit) - 1;
+        vector<int> ans;
+        int prevXor = 0, currXor = 0;
 
-        for (int i=0;i<nums.length;i++)
+        for (auto &n:nums)
         {
-            int idx = n-1-i;
-            ans[idx] = val ^ prevXor ^ nums[i];
-            prevXor = prevXor ^ nums[i];
+            currXor = prevXor ^ n;
+            ans.push_back(val ^ currXor);
+            prevXor = currXor;
         }
+
+        reverse(ans.begin(), ans.end());
 
         return ans;
     }
-}
+};
